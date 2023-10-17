@@ -1,65 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <title>CSV Table</title>
-    <style>
-        #error_message{
-            color: red;
-            font-size: 30px;
-        }
-        h1 {
-            background-color: blue;
-            color: white;
-            width: 350px;
-            text-align: center;
-        }
-        table {
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-transform: capitalize;
-        }
-        th {background-color: aqua}
-    </style>
+    <link rel="stylesheet" type="text/css" href="/stylesheet.css">
 </head>
 <body>
 <h1>Ihre Daten</h1>
+
+{% if error %}
+    <div id="error_message">{{ error|safe }}</div>
+<!-- ... Tabelle und Daten ... -->
+{% else %}
     <table>
-        <!-- ... Tabelle und Daten ... -->
-        {% if error %}
-            <tr><td id="error_message" colspan="{{ headers|length }}">{{ error }}</td></tr>
-        {% else %}
-            <tr>
-                {% for header in headers %}
-                    <th>{{ header }}</th>
-                {% endfor %}
-            </tr>
-                {% for entry in entries %}
-                <tr>
-                    {% for header in headers %}
-                        <td>{{ entry[header]|capitalize }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-        {% endif %}
+    <tr>
+    {% for header in headers %}
+        <th>{{ header }}</th>
+    {% endfor %}
+    </tr>
+    {% for entry in entries %}
+    <tr>
+        {% for header in headers %}
+            <td>{{ entry[header]|capitalize }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
     </table>
-</br>
+{% endif %}
+<br>
 <list>
-    <ul><div>Inster Beispiel: {"name": "schmidt", "street": "Dorfstr"}</div></ul>
-    <ul><div>Update Beispiel: {"name": "maier", "street": "Donaustr"}</div></ul>
-    <ul><div>Delete Beispiel: name="otto"</div></ul>
+    <ul>Inster Beispiel: {"name": "schmidt", "street": "Dorfstr"}</ul>
+    <ul>Update Beispiel: {"name": "maier", "street": "Donaustr"}</ul>
+    <ul>Delete Beispiel: otto</ul>
 </list>
-</br>
+<br>
     <div>
         <label for="inputField">Ihre Eingabe:</label>
         <input type="text" id="inputField" name="inputField">
     </div>
-</br>
+<br>
     <button onclick="location.href='/fetch_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
     <button onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
     <button onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>

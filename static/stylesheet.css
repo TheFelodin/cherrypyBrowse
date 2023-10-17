@@ -1,0 +1,22 @@
+#error_message{
+    color: red;
+    font-size: 30px;
+}
+h1 {
+    background-color: blue;
+    color: white;
+    width: 350px;
+    text-align: center;
+}
+table {
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 10px;
+    text-transform: capitalize;
+}
+th {background-color: aqua}

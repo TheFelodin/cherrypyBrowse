@@ -1,8 +1,17 @@
+import os
 import json
 
 import cherrypy
 import dkcsvdb
 from jinja2 import Environment, FileSystemLoader
+
+cherrypy.config.update({
+    'server.socket_host': '0.0.0.0',
+    'server.socket_port': 8081,
+    'tools.staticdir.on': True,
+    'tools.staticdir.dir': 'static',
+    'tools.staticdir.root': os.path.abspath(os.getcwd())
+})
 
 
 class TableApp:
@@ -64,7 +73,7 @@ class TableApp:
                 # Aufruf der `insert`-Methode in `dkcsvdb`, um die Daten in die CSV-Datei einzufügen
                 self.db.insert(data_dict)
             except json.JSONDecodeError as e:
-                self.error_message = "Es wurden keine gültigen JSON-Daten eingegeben: " + str(e)
+                self.error_message = "Es wurden keine gültigen JSON-Daten eingegeben:<br>" + str(e)
                 rendered_html = self.render_template([], [], error=self.error_message)
                 return rendered_html
 
@@ -89,9 +98,10 @@ class TableApp:
                     # Aufruf der `update`-Methode in `dkcsvdb`, um die Daten in die CSV-Datei einzufügen
                     self.db.update(data_dict)
             except json.JSONDecodeError as e:
-                self.error_message = "Es wurden keine gültigen JSON-Daten eingegeben: " + str(e)
+                self.error_message = "Es wurden keine gültigen JSON-Daten eingegeben:<br>" + str(e)
                 rendered_html = self.render_template([], [], error=self.error_message)
                 return rendered_html
+
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
@@ -104,19 +114,15 @@ class TableApp:
         if filter:
             self.db.delete(name=filter)
         else:
-            # Kein Filter angegeben, löschen Sie alle Einträge
+            # Ist kein Filter angegeben werden alle Einträge geloescht
             try:
                 self.db.delete()
             except Exception as e:
-                self.error_message = "Beim Löschen ist ein Fehler aufgetreten: " + str(e)
+                self.error_message = "Beim Löschen ist ein Fehler aufgetreten:<br>" + str(e)
 
         raise cherrypy.HTTPRedirect('/')
 
 
 if __name__ == '__main__':
     csv_filename = 'some-file.csv'
-    cherrypy.config.update({
-        'server.socket_host': '0.0.0.0',
-        'server.socket_port': 8081,
-    })
     cherrypy.quickstart(TableApp(csv_filename))
