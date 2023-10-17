@@ -9,6 +9,7 @@
 
 {% if error %}
     <div id="error_message">{{ error|safe }}</div>
+    <button onclick="location.href='/'">Back</button>
 <!-- ... Tabelle und Daten ... -->
 {% else %}
     <table>
@@ -25,7 +26,6 @@
     </tr>
     {% endfor %}
     </table>
-{% endif %}
 <br>
 <list>
     <ul>Inster Beispiel: {"name": "schmidt", "street": "Dorfstr"}</ul>
@@ -42,5 +42,6 @@
     <button onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
     <button onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
     <button onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
+{% endif %}
 </body>
 </html>

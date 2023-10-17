@@ -76,6 +76,10 @@ class TableApp:
                 self.error_message = "Es wurden keine gültigen JSON-Daten eingegeben:<br>" + str(e)
                 rendered_html = self.render_template([], [], error=self.error_message)
                 return rendered_html
+        else:
+            self.error_message = "Es wurden keine Daten eingegeben.<br>Bitte geben Sie ein gueltiges JSON ein."
+            rendered_html = self.render_template([], [], error=self.error_message)
+            return rendered_html
 
         raise cherrypy.HTTPRedirect('/')
 
@@ -96,11 +100,16 @@ class TableApp:
                 else:
 
                     # Aufruf der `update`-Methode in `dkcsvdb`, um die Daten in die CSV-Datei einzufügen
-                    self.db.update(data_dict)
+                    name_to_update = data_dict['name']
+                    self.db.update(data_dict, name=name_to_update)
             except json.JSONDecodeError as e:
                 self.error_message = "Es wurden keine gültigen JSON-Daten eingegeben:<br>" + str(e)
                 rendered_html = self.render_template([], [], error=self.error_message)
                 return rendered_html
+        else:
+            self.error_message = "Es wurden keine Daten eingegeben.<br>Bitte geben Sie ein gueltiges JSON ein."
+            rendered_html = self.render_template([], [], error=self.error_message)
+            return rendered_html
 
         raise cherrypy.HTTPRedirect('/')
 
