@@ -1,47 +1,55 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Table</title>
     <link rel="stylesheet" type="text/css" href="/stylesheet.css">
 </head>
 <body>
-<h1>Ihre Daten</h1>
+<h1>Your data</h1>
 
 {% if error %}
     <div id="error_message">{{ error|safe }}</div>
-    <button onclick="location.href='/'">Back</button>
-<!-- ... Tabelle und Daten ... -->
+    <button id="back" onclick="location.href='/'">Back</button>
+
 {% else %}
+    <!-- ... Table and Data... -->
     <table>
-    <tr>
-    {% for header in headers %}
-        <th>{{ header }}</th>
-    {% endfor %}
-    </tr>
-    {% for entry in entries %}
-    <tr>
-        {% for header in headers %}
-            <td>{{ entry[header]|capitalize }}</td>
+        <tr>
+            {% for header in headers %}
+                <th class="header1" id="{{ header }}">{{ header }}</th>
+            {% endfor %}
+        </tr>
+        {% for entry in entries %}
+            {% set current_index = loop.index %}
+            <tr id="{{ current_index }}">
+                {% for header in headers %}
+                    <td id="{{ header ~ current_index }}">{{ entry[header]|capitalize }}</td>
+                {% endfor %}
+            </tr>
         {% endfor %}
-    </tr>
-    {% endfor %}
     </table>
-<br>
-<list>
-    <ul>Inster Beispiel: {"name": "schmidt", "street": "Dorfstr"}</ul>
-    <ul>Update Beispiel: {"name": "maier", "street": "Donaustr"}</ul>
-    <ul>Delete Beispiel: otto</ul>
-</list>
-<br>
     <div>
-        <label for="inputField">Ihre Eingabe:</label>
+        <label for="inputField">Your input:</label>
+    </div>
+    <div>
         <input type="text" id="inputField" name="inputField">
     </div>
-<br>
-    <button onclick="location.href='/fetch_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
-    <button onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
-    <button onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
-    <button onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
+    <br>
+        <button id="fetch" onclick="location.href='/fetch_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
+        <button id="insert" onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
+        <button id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
+        <button id="delete" onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
+    <br>
+    <br>
+    <table>
+        <tr><th colspan="2" class="header2">Input exaples:</th></tr>
+        <tr><td>Inster:</td> <td>{"name": "schmidt", "street": "Dorfstr"}</td></tr>
+        <tr><td>Update:</td> <td>{"name": "maier", "street": "Donaustr"}</td></tr>
+        <tr><td>Delete:</td> <td>otto</td></tr>
+    </table>
+    <br>
 {% endif %}
 </body>
 </html>

@@ -1,7 +1,6 @@
 body {
-    background-color: burlywood;
+    background-color: gray;
 }
-
 #error_message{
     color: red;
     font-size: 30px;
@@ -24,4 +23,11 @@ th, td {
     padding: 10px;
     text-transform: capitalize;
 }
-th {background-color: aqua}
+
+th.header1 {
+    background-color: cornflowerblue;
+}
+
+th.header2 {
+    background-color: green;
+}
