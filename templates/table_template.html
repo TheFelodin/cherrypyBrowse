@@ -43,12 +43,14 @@
         <button id="delete" onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
     <br>
     <br>
+    <span style="font-size: x-small; ">
     <table>
         <tr><th colspan="2" class="header2">Input exaples:</th></tr>
-        <tr><td>Inster:</td> <td>{"name": "schmidt", "street": "Dorfstr"}</td></tr>
+        <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "Dorfstr"}</td></tr>
         <tr><td>Update:</td> <td>{"name": "maier", "street": "Donaustr"}</td></tr>
         <tr><td>Delete:</td> <td>otto</td></tr>
     </table>
+    </span>
     <br>
 {% endif %}
 </body>
