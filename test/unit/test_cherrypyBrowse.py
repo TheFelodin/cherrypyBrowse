@@ -4,15 +4,24 @@ import threading
 import pytest
 
 from bs4 import BeautifulSoup
-from cherrypyBrowse.cherrypyBrowse import TableApp
+from src.cherrypyBrowse.cherrypyBrowse import TableApp
 
 base_url = 'http://127.0.0.1:8082'
 
 
-@pytest.fixture()
-def start_cherrypy(scope=module, autouse=True):
+@pytest.fixture(scope="module")
+def cherrypy_server(tmp_path_factory):
+    # Erstellen Sie eine temporäre CSV-Datei für Testzwecke
+    tmp_path = tmp_path_factory.mktemp("data")
+    csv_filename = tmp_path / "test_data.csv"
+    csv_filename.write_text("""\
+                                name,street
+                                otto,Landstr
+                                maier,Hauptstr
+                                """)
+
     cherrypy.config.update({'server.socket_host': '127.0.0.1', 'server.socket_port': 8082})
-    cherrypy.tree.mount(TableApp('some-file.csv'), '/')
+    cherrypy.tree.mount(TableApp(csv_filename), '/')
     cherrypy.engine.start()
 
     def stop():
