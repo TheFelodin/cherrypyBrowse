@@ -1,1 +1,6 @@
 dkcsvdb
+cherrypy
+requests
+pytest
+bs4
+jinja2

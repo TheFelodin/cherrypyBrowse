@@ -1,7 +1,34 @@
+import cherrypy
 import requests
-from bs4 import BeautifulSoup
+import threading
+import pytest
 
-base_url = 'http://localhost:8081'
+from bs4 import BeautifulSoup
+from cherrypyBrowse import TableApp
+
+base_url = 'http://127.0.0.1:8082'
+
+
+@pytest.fixture()
+def start_cherrypy(scope=module, autouse=True):
+    cherrypy.config.update({'server.socket_host': '127.0.0.1', 'server.socket_port': 8082})
+    cherrypy.tree.mount(TableApp('some-file.csv'), '/')
+    cherrypy.engine.start()
+
+    def stop():
+        cherrypy.engine.exit()
+        cherrypy.engine.block()
+
+    t = threading.Thread(target=stop)
+    t.start()
+    yield
+    t.join()
+
+
+def test_cherrypy_server(cherrypy_server):
+    response = requests.get('http://127.0.0.1:8082')
+    assert response.status_code == 200
+
 
 def test_webpage_content():
     url = base_url

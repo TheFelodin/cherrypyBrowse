@@ -14,11 +14,10 @@ cherrypy.config.update({
 })
 
 
-
 class TableApp:
     def __init__(self, csv_filename):
         self.db = dkcsvdb.connect(csv_filename)
-        self.template_env = Environment(loader=FileSystemLoader('./src/templates'))
+        self.template_env = Environment(loader=FileSystemLoader('templates'))
         self.error_message = None
 
     def render_template(self, headers, entries, error=None):
@@ -34,7 +33,7 @@ class TableApp:
         else:
 
             # Wenn keine Einträge gefunden wurden
-            error_message = "Es wurden keine Eintraege gefunden."
+            error_message = "Es wurden keine Einträge gefunden."
             rendered_html = self.render_template([], [], error=error_message)
 
         return rendered_html
@@ -42,7 +41,7 @@ class TableApp:
     @cherrypy.expose
     def fetch_data(self, filter=None):
 
-        # Bisherigen Fehlerstatus loeschen
+        # Bisherigen Fehlerstatus löschen
         self.error_message = None
 
         # Ruft die `fetch`-Methode aus dkcsvdb.py mit dem gegebenen Filter auf
@@ -56,7 +55,7 @@ class TableApp:
         else:
 
             # Wenn keine Einträge gefunden wurden
-            error_message = "Es wurden keine Eintraege gefunden."
+            error_message = "Es wurden keine Einträge gefunden."
             rendered_html = self.render_template([], [], error=error_message)
 
         return rendered_html
@@ -78,7 +77,7 @@ class TableApp:
                 rendered_html = self.render_template([], [], error=self.error_message)
                 return rendered_html
         else:
-            self.error_message = "Es wurden keine Daten eingegeben.<br>Bitte geben Sie ein gueltiges JSON ein."
+            self.error_message = "Es wurden keine Daten eingegeben.<br>Bitte geben Sie ein gültiges JSON ein."
             rendered_html = self.render_template([], [], error=self.error_message)
             return rendered_html
 
@@ -108,7 +107,7 @@ class TableApp:
                 rendered_html = self.render_template([], [], error=self.error_message)
                 return rendered_html
         else:
-            self.error_message = "Es wurden keine Daten eingegeben.<br>Bitte geben Sie ein gueltiges JSON ein."
+            self.error_message = "Es wurden keine Daten eingegeben.<br>Bitte geben Sie ein gültiges JSON ein."
             rendered_html = self.render_template([], [], error=self.error_message)
             return rendered_html
 
@@ -117,14 +116,14 @@ class TableApp:
     @cherrypy.expose
     def delete_data(self, filter=None):
 
-        # Bisherigen Fehlerstatus loeschen
+        # Bisherigen Fehlerstatus löschen
         self.error_message = None
 
         # Ruft die `delete`-Methode aus dkcsvdb.py mit dem gegebenen Filter auf
         if filter:
             self.db.delete(name=filter)
         else:
-            # Ist kein Filter angegeben werden alle Einträge geloescht
+            # Ist kein Filter angegeben werden alle Einträge gelöscht
             try:
                 self.db.delete()
             except Exception as e:
@@ -132,19 +131,18 @@ class TableApp:
 
         raise cherrypy.HTTPRedirect('/')
 
-
     @cherrypy.expose
     def reset_data(self):
         try:
-            source_file = './src/some-file-backup.csv'
-            destination_file = './src/some-file.csv'
+            source_file = 'some-file-backup.csv'
+            destination_file = 'some-file.csv'
 
             # Überprüfen, ob die Datei existiert
             if os.path.exists(source_file):
                 # Dateiinhalt kopieren, um sie zurückzusetzen
                 with open(destination_file, 'wb') as dest, open(source_file, 'rb') as src:
                     dest.write(src.read())
-                return "Reset successfull"
+                return "Reset successful"
             else:
                 return "No source available"
         except Exception as e:
@@ -152,6 +150,5 @@ class TableApp:
 
 
 if __name__ == '__main__':
-    csv_filename = './src/some-file.csv'
+    csv_filename = 'some-file.csv'
     cherrypy.quickstart(TableApp(csv_filename))
-
