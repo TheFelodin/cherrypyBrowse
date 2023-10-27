@@ -44,11 +44,11 @@
         <button id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
         <button id="delete" onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
     <br>
-<hr>
+    <hr>
     <br>
     <span style="font-size: x-small; ">
     <table>
-        <tr><th colspan="2" class="header2">Input exaples:</th></tr>
+        <tr><th colspan="2" class="header2">Input examples:</th></tr>
         <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "Dorfstr"}</td></tr>
         <tr><td>Update:</td> <td>{"name": "maier", "street": "Donaustr"}</td></tr>
         <tr><td>Delete:</td> <td>otto</td></tr>
@@ -57,6 +57,7 @@
     <br>
     <br>
 {% endif %}
+<!-- ... Reset button ... -->
         <button id="reset-button" onclick="reset_data()">Reset</button>
 </body>
 </html>

@@ -1,0 +1,1 @@
+# from .cherrypyBrowse import TableApp
