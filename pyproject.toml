@@ -1,11 +1,12 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatchling-requirements-txt"]
 build-backend = "hatchling.build"
 
 
 [project]
 name = "cherrypyBrowse"
 version = "0.0.1"
+dynamic = ["dependencies"]
 authors = [
   { name="TheFelodin", email="felodin.blutstein@gmail.com" },
 ]
@@ -21,3 +22,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/TheFelodin/cherrypyBrowse"
 "Bug Tracker" = "https://github.com/TheFelodin/cherrypyBrowse/issues"
+
+[tools.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
