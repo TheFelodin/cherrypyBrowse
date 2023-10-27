@@ -1,12 +1,12 @@
+import cherrypy
+import dkcsvdb
 import os
 import json
 
-import cherrypy
-import dkcsvdb
 from jinja2 import Environment, FileSystemLoader
 
 cherrypy.config.update({
-    'server.socket_host': '0.0.0.0',
+    'server.socket_host': '127.0.0.1',
     'server.socket_port': 8081,
     'tools.staticdir.on': True,
     'tools.staticdir.dir': 'static',
@@ -14,10 +14,11 @@ cherrypy.config.update({
 })
 
 
+
 class TableApp:
     def __init__(self, csv_filename):
         self.db = dkcsvdb.connect(csv_filename)
-        self.template_env = Environment(loader=FileSystemLoader('templates'))
+        self.template_env = Environment(loader=FileSystemLoader('./src/templates'))
         self.error_message = None
 
     def render_template(self, headers, entries, error=None):
@@ -132,6 +133,25 @@ class TableApp:
         raise cherrypy.HTTPRedirect('/')
 
 
+    @cherrypy.expose
+    def reset_data(self):
+        try:
+            source_file = './src/some-file-backup.csv'
+            destination_file = './src/some-file.csv'
+
+            # Überprüfen, ob die Datei existiert
+            if os.path.exists(source_file):
+                # Dateiinhalt kopieren, um sie zurückzusetzen
+                with open(destination_file, 'wb') as dest, open(source_file, 'rb') as src:
+                    dest.write(src.read())
+                return "Reset successfull"
+            else:
+                return "No source available"
+        except Exception as e:
+            return str(e)
+
+
 if __name__ == '__main__':
-    csv_filename = 'some-file.csv'
+    csv_filename = './src/some-file.csv'
     cherrypy.quickstart(TableApp(csv_filename))
+

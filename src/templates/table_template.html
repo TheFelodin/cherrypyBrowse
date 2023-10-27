@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Table</title>
-    <link rel="stylesheet" type="text/css" href="/stylesheet.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/stylesheet.css">
+    <script src="/static/js/script.js"></script>
 </head>
 <body>
 <h1>Your data</h1>
@@ -42,6 +44,7 @@
         <button id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
         <button id="delete" onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
     <br>
+<hr>
     <br>
     <span style="font-size: x-small; ">
     <table>
@@ -52,6 +55,8 @@
     </table>
     </span>
     <br>
+    <br>
 {% endif %}
+        <button id="reset-button" onclick="reset_data()">Reset</button>
 </body>
 </html>
