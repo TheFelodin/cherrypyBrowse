@@ -4,7 +4,11 @@ import threading
 import pytest
 
 from bs4 import BeautifulSoup
+<<<<<<<< HEAD:test/unit/test_cherrypyBrowse.py
 from src.cherrypyBrowse.cherrypyBrowse import TableApp
+========
+from cherrypyBrowse.cherrypyBrowse import TableApp
+>>>>>>>> origin/Restructured:test/unit/test_main.py
 
 base_url = 'http://127.0.0.1:8082'
 
