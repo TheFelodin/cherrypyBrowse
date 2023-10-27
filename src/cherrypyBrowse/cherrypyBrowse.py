@@ -17,7 +17,7 @@ cherrypy.config.update({
 class TableApp:
     def __init__(self, csv_filename):
         self.db = dkcsvdb.connect(csv_filename)
-        self.template_env = Environment(loader=FileSystemLoader('templates'))
+        self.template_env = Environment(loader=FileSystemLoader('../templates'))
         self.error_message = None
 
     def render_template(self, headers, entries, error=None):
