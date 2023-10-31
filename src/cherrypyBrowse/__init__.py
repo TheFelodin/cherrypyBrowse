@@ -1,1 +1,1 @@
-# from .cherrypyBrowse import TableApp
+from .cherrypyBrowse import TableApp

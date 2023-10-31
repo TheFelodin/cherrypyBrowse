@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Table</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/stylesheet.css">
-    <script src="/static/js/script.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
+    <script src="/js/script.js"></script>
 </head>
 <body>
 <h1>Your data</h1>
@@ -17,7 +17,7 @@
 
 {% else %}
     <!-- ... Table and Data... -->
-    <table>
+    <table class="data_table">
         <tr>
             {% for header in headers %}
                 <th class="header1" id="{{ header }}">{{ header }}</th>
@@ -27,7 +27,7 @@
             {% set current_index = loop.index %}
             <tr id="{{ current_index }}">
                 {% for header in headers %}
-                    <td id="{{ header ~ current_index }}">{{ entry[header]|capitalize }}</td>
+                    <td class={{header}} id="{{ header ~ current_index }}">{{ entry[header] }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -39,7 +39,7 @@
         <input type="text" id="inputField" name="inputField">
     </div>
     <br>
-        <button id="fetch" onclick="location.href='/fetch_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
+        <button id="fetch" onclick="location.href='/?filter=' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
         <button id="insert" onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
         <button id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
         <button id="delete" onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
@@ -47,10 +47,10 @@
     <hr>
     <br>
     <span style="font-size: x-small; ">
-    <table>
+    <table class="example_table">
         <tr><th colspan="2" class="header2">Input examples:</th></tr>
-        <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "Dorfstr"}</td></tr>
-        <tr><td>Update:</td> <td>{"name": "maier", "street": "Donaustr"}</td></tr>
+        <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "dorfstr"}</td></tr>
+        <tr><td>Update:</td> <td>{"name": "maier", "street": "donaustr"}</td></tr>
         <tr><td>Delete:</td> <td>otto</td></tr>
     </table>
     </span>
