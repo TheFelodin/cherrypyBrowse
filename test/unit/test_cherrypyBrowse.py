@@ -19,10 +19,19 @@ csv_text = f"{HEAD1},{HEAD2}\n{NAME1},{STREET1}\n{NAME2},{STREET2}\n{NAME1},{STR
 
 @pytest.fixture(scope="module", autouse=True)
 def cherrypy_server(tmp_path_factory):
+    """
+    Creating a cherrypt server with port based on provided base_url for testing purposes. Server is shut down after
+    tests.
+
+    :return: directory of temporary files used by server
+    """
+
     # creates temporary file for testing
     tmp_path = tmp_path_factory.mktemp("data")
     csv_filename = tmp_path / "test_data.csv"
     csv_filename.write_text(csv_text)
+
+    # create server
     cherrypy.config.update({'server.socket_port': int(base_url[-4:])})
     cherrypy.tree.mount(TableApp(csv_filename), '/')
     cherrypy.engine.start()
@@ -34,16 +43,17 @@ def cherrypy_server(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def reset_db():
+    """
+    Resets the server for each test.
+    """
     response = requests.get(base_url + '/reset_data')
     assert response.status_code == 200
 
 
-def test_cherrypy_server():
-    response = requests.get(base_url)
-    assert response.status_code == 200
-
-
 def test_render_template():
+    """
+    Test if template is running on server
+    """
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -53,11 +63,17 @@ def test_render_template():
 
 
 def test_index():
+    """
+    Test if server is running and base url is available.
+    """
     response = requests.get(base_url)
     assert response.status_code == 200
 
 
 def test_index_with_filter():
+    """
+    Test if an existing filter is showing the right results.
+    """
     url = f'{base_url}/?filter={NAME2}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -71,6 +87,9 @@ def test_index_with_filter():
 
 
 def test_insert_data():
+    """
+    Tests if data provided in the correct format is added correctly.
+    """
     insert_name = 'weber'
     insert_street = 'waldstr'
     insert = f'{{"name": "{insert_name}", "street": "{insert_street}"}}'
@@ -85,6 +104,9 @@ def test_insert_data():
 
 
 def test_invalid_json_insert_data():
+    """
+    Tests if data provided in the wrong format raises the correct error message.
+    """
     insert_name = 'weber'
     insert_street = 'waldstr'
     insert = f'"name": {insert_name}, "street": {insert_street}'
@@ -95,6 +117,9 @@ def test_invalid_json_insert_data():
 
 
 def test_empty_insert_data():
+    """
+    Tests if inserting without input raises the correct error message.
+    """
     url = f'{base_url}/insert_data?data='
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -102,6 +127,9 @@ def test_empty_insert_data():
 
 
 def test_update_data():
+    """
+    Tests if updating data with correct filter is done right.
+    """
     update_name = 'otto'
     update_street = 'waldstr'
     update = f'{{"name": "{update_name}", "street": "{update_street}"}}'
@@ -128,6 +156,9 @@ def test_update_data():
 
 
 def test_invalid_json_update_data():
+    """
+    Tests if invalid data causes update to produce the correct error message.
+    """
     update_name = 'weber'
     update_street = 'waldstr'
     update = f'"name": {update_name}, "street": {update_street}'
@@ -138,13 +169,29 @@ def test_invalid_json_update_data():
 
 
 def test_empty_update_data():
+    """
+    Tests if updating without input raises the correct error message.
+    """
     url = f'{base_url}/update_data?data='
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
     assert "No input detected.Please enter valid JSON." in soup.find("div", {"id": "error_message"}).get_text()
 
 
+def test_wrong_update_data():
+    """
+    Tests if updating with wrong input raises the correct error message.
+    """
+    url = f'{base_url}/update_data?data="frank"'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    assert "'name' is missing." in soup.find("div", {"id": "error_message"}).get_text()
+
+
 def test_delete_data_with_filter():
+    """
+    Tests deleting entries based on filter.
+    """
     url = f'{base_url}/delete_data?filter={NAME1}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -158,34 +205,50 @@ def test_delete_data_with_filter():
 
 
 def test_delete_data_without_filter():
+    """
+    Tests deleting all data if no filter is given.
+    """
     url = f'{base_url}/delete_data?filter='
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
     assert "No entries found." in soup.find("div", {"id": "error_message"}).get_text()
 
 
-def test_copy_file(tmp_path):
-    backup_file_path = tmp_path / "../data0/test_data.backup"
+def test_copy_file(cherrypy_server):
+    """
+    Tests if backup file was created.
+
+    :param: cherrypy_server: Temporary path used by cherrypy server.
+    """
+    backup_file_path = cherrypy_server / "../data0/test_data.backup"
     assert backup_file_path.exists()
 
 
-def test_reset_data():
+def test_reset_data(cherrypy_server):
+    """
+    Tests if reset_data restores deleted data file.
+
+    :param: cherrypy_server: Temporary path used by cherrypy server.
+    """
+    file_path = cherrypy_server / "../data0"
+    os.remove(file_path / "test_data.csv")
     reset_url = base_url + '/reset_data'
     response = requests.get(reset_url)
+    file_path = cherrypy_server / "../data0/test_data.csv"
+    assert file_path.exists()
     assert response.text == "Reset successful"
 
 
-def test_reset_data_without_backup(tmp_path):
-    backup_file_path = tmp_path / "../data0"
-    print("\nZZZZZZZZZZZ", os.listdir(backup_file_path))
-    os.remove(backup_file_path/"test_data.backup")
-    print("AAAAAAaaAAAAA", os.listdir(backup_file_path))
+def test_reset_data_without_backup(cherrypy_server):
+    """
+    Tests if missing backup file causes correct error message in case of reset.
+
+    :param: cherrypy_server: Temporary path used by cherrypy server.
+    """
+    backup_file_path = cherrypy_server / "../data0"
+    os.remove(backup_file_path / "test_data.backup")
     reset_url = base_url + '/reset_data'
 
-    # Use pytest.raises to catch the expected exception
-    with pytest.raises(cherrypy.HTTPError) as exc_info:
-        requests.get(reset_url)
-    print("BBBBBBBBBBBBBB", os.listdir(backup_file_path))
-    exception = exc_info.value
-    assert exception.status == 400
-    assert str(exception) == "Backup file not found"
+    res = requests.get(reset_url)
+    assert res.status_code == 400
+    assert "Backup file not found" in res.text

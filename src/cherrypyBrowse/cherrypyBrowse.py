@@ -153,7 +153,7 @@ class TableApp:
 
     def _copy_file(self, source_file, target_file):
         """
-        Copys file
+        Copys source file into target file.
 
         :param source_file: filename for file to be copied
         :param target_file: filename for file to be copied into
@@ -165,18 +165,16 @@ class TableApp:
     @cherrypy.expose
     def reset_data(self):
         """
-        Uses _copy_file to resorte file from file.backup
+        ONLY FOR DEVELOPMENT PURPOSES!!!
+        Uses _copy_file to resorte file from file.backup.
+        ONLY FOR DEVELOPMENT PURPOSES!!!
         """
-
-        try:
-            # check for backup file
-            if os.path.exists(self.csv_backup):
-                self._copy_file(self.csv_backup, self.csv_filename)
-                return "Reset successful"
-            else:
-                raise cherrypy.HTTPError(400, "Backup file not found")
-        except Exception as e:
-            raise cherrypy.HTTPError(400, str(e))
+        # check for backup file
+        if os.path.exists(self.csv_backup):
+            self._copy_file(self.csv_backup, self.csv_filename)
+            return "Reset successful"
+        else:
+            raise cherrypy.HTTPError(400, "Backup file not found")
 
 
 if __name__ == '__main__':
