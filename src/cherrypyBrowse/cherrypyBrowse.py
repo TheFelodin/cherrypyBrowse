@@ -30,10 +30,12 @@ class TableApp:
         """
         Creates a hmtl file displaing data in a table.
 
-        :param headers: Table headers
-        :param entries: Data shown in the table
-        :param error: Error message to display
-        :return: dynamic generated HTML
+        Args:
+            headers: Table headers
+            entries: Data shown in the table
+            error: Error message to display
+
+        Returns: dynamic generated HTML
         """
 
         template = self.template_env.get_template('table_template.html')
@@ -45,9 +47,12 @@ class TableApp:
         """
         Collects data from file
 
-        :param filter: name given via input field
-        :return: dynamic generated HTML displaying selected entries or error message
+        Args:
+            filter: name given via input field
+
+        Returns: dynamic generated HTML displaying selected entries or error message
         """
+
         if cherrypy.request.params.get("filter") == "":
             raise cherrypy.HTTPRedirect('/')
 
@@ -75,8 +80,10 @@ class TableApp:
         """
         Adds entry to database.
 
-        :param data: e.g. {"name": "schmidt", "street": "dorfstr"}. JSON formated entry with keys "name" & "street"
-        :return: dynamic generated HTML of all entries
+        Args:
+            data: e.g. {"name": "schmidt", "street": "dorfstr"}. JSON formated entry with keys "name" & "street"
+
+        Returns: dynamic generated HTML of all entries
         """
 
         self.error_message = None
@@ -103,9 +110,11 @@ class TableApp:
         """
         Updates values in database entries based on their key.
 
-        :param data: e.g. {"name": "schmidt", "street": "dorfstr"}. JSON formated entry with keys "name" & "street"
+        Args:
+            data: e.g. {"name": "schmidt", "street": "dorfstr"}. JSON formated entry with keys "name" & "street"
                         where street is the new value
-        :return: dynamic generated HTML displaying all data
+
+        Returns: dynamic generated HTML displaying all data
         """
 
         self.error_message = None
@@ -136,8 +145,10 @@ class TableApp:
         """
         Deletes entries based on given filter or all entries.
 
-        :param filter: "Name" for to be deleted entries
-        :return: Returns to starting page
+        Args:
+            filter: "Name" for to be deleted entries
+
+        Returns: Returns to starting page
         """
 
         self.error_message = None
@@ -155,8 +166,9 @@ class TableApp:
         """
         Copys source file into target file.
 
-        :param source_file: filename for file to be copied
-        :param target_file: filename for file to be copied into
+        Args:
+            source_file: filename for file to be copied
+            target_file: filename for file to be copied into
         """
 
         with open(target_file, 'wb') as dest, open(source_file, 'rb') as src:
@@ -169,6 +181,7 @@ class TableApp:
         Uses _copy_file to resorte file from file.backup.
         ONLY FOR DEVELOPMENT PURPOSES!!!
         """
+
         # check for backup file
         if os.path.exists(self.csv_backup):
             self._copy_file(self.csv_backup, self.csv_filename)

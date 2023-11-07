@@ -23,7 +23,11 @@ def cherrypy_server(tmp_path_factory):
     Creating a cherrypt server with port based on provided base_url for testing purposes. Server is shut down after
     tests.
 
-    :return: directory of temporary files used by server
+    Args:
+        tmp_path_factory: session-scoped fixture to create arbitrary temporary directories
+
+    Returns: directory of temporary files used by server
+
     """
 
     # creates temporary file for testing
@@ -46,6 +50,7 @@ def reset_db():
     """
     Resets the server for each test.
     """
+
     response = requests.get(base_url + '/reset_data')
     assert response.status_code == 200
 
@@ -54,6 +59,7 @@ def test_render_template():
     """
     Test if template is running on server
     """
+
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -66,6 +72,7 @@ def test_index():
     """
     Test if server is running and base url is available.
     """
+
     response = requests.get(base_url)
     assert response.status_code == 200
 
@@ -74,6 +81,7 @@ def test_index_with_filter():
     """
     Test if an existing filter is showing the right results.
     """
+
     url = f'{base_url}/?filter={NAME2}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -90,6 +98,7 @@ def test_insert_data():
     """
     Tests if data provided in the correct format is added correctly.
     """
+
     insert_name = 'weber'
     insert_street = 'waldstr'
     insert = f'{{"name": "{insert_name}", "street": "{insert_street}"}}'
@@ -107,6 +116,7 @@ def test_invalid_json_insert_data():
     """
     Tests if data provided in the wrong format raises the correct error message.
     """
+
     insert_name = 'weber'
     insert_street = 'waldstr'
     insert = f'"name": {insert_name}, "street": {insert_street}'
@@ -120,6 +130,7 @@ def test_empty_insert_data():
     """
     Tests if inserting without input raises the correct error message.
     """
+
     url = f'{base_url}/insert_data?data='
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -130,6 +141,7 @@ def test_update_data():
     """
     Tests if updating data with correct filter is done right.
     """
+
     update_name = 'otto'
     update_street = 'waldstr'
     update = f'{{"name": "{update_name}", "street": "{update_street}"}}'
@@ -159,6 +171,7 @@ def test_invalid_json_update_data():
     """
     Tests if invalid data causes update to produce the correct error message.
     """
+
     update_name = 'weber'
     update_street = 'waldstr'
     update = f'"name": {update_name}, "street": {update_street}'
@@ -172,6 +185,7 @@ def test_empty_update_data():
     """
     Tests if updating without input raises the correct error message.
     """
+
     url = f'{base_url}/update_data?data='
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -182,6 +196,7 @@ def test_wrong_update_data():
     """
     Tests if updating with wrong input raises the correct error message.
     """
+
     url = f'{base_url}/update_data?data="frank"'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -192,6 +207,7 @@ def test_delete_data_with_filter():
     """
     Tests deleting entries based on filter.
     """
+
     url = f'{base_url}/delete_data?filter={NAME1}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -208,6 +224,7 @@ def test_delete_data_without_filter():
     """
     Tests deleting all data if no filter is given.
     """
+
     url = f'{base_url}/delete_data?filter='
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -218,8 +235,10 @@ def test_copy_file(cherrypy_server):
     """
     Tests if backup file was created.
 
-    :param: cherrypy_server: Temporary path used by cherrypy server.
+    Args:
+        cherrypy_server: Temporary path used by cherrypy server.
     """
+
     backup_file_path = cherrypy_server / "../data0/test_data.backup"
     assert backup_file_path.exists()
 
@@ -228,8 +247,10 @@ def test_reset_data(cherrypy_server):
     """
     Tests if reset_data restores deleted data file.
 
-    :param: cherrypy_server: Temporary path used by cherrypy server.
+    Args:
+        cherrypy_server: Temporary path used by cherrypy server.
     """
+
     file_path = cherrypy_server / "../data0"
     os.remove(file_path / "test_data.csv")
     reset_url = base_url + '/reset_data'
@@ -243,8 +264,10 @@ def test_reset_data_without_backup(cherrypy_server):
     """
     Tests if missing backup file causes correct error message in case of reset.
 
-    :param: cherrypy_server: Temporary path used by cherrypy server.
+    Args:
+        cherrypy_server: Temporary path used by cherrypy server.
     """
+
     backup_file_path = cherrypy_server / "../data0"
     os.remove(backup_file_path / "test_data.backup")
     reset_url = base_url + '/reset_data'
