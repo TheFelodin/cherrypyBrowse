@@ -6,7 +6,6 @@ import pathlib
 
 from jinja2 import Environment, FileSystemLoader
 
-
 SRC_DIR = pathlib.Path(__file__).parent.parent
 
 cherrypy.config.update({
@@ -24,51 +23,47 @@ class TableApp:
         self._copy_file(self.csv_filename, self.csv_backup)
         self.db = dkcsvdb.connect(csv_filename)
         self.template_env = Environment(loader=FileSystemLoader(SRC_DIR / 'templates'))
-        self.error_message = None
 
-    def render_template(self, headers, entries, error=None):
+    def render_template(self, headers, entries, filters=None, error=None):
         """
         Creates a hmtl file displaing data in a table.
 
         Args:
             headers: Table headers
             entries: Data shown in the table
+            filters: Inputfield content
             error: Error message to display
 
         Returns: dynamic generated HTML
         """
 
         template = self.template_env.get_template('table_template.html')
-        return template.render(headers=headers, entries=entries, error=error)
-
+        return template.render(headers=headers, entries=entries, filters=filters, error=error)
 
     @cherrypy.expose
-    def index(self, filter=None):
+    def index(self, **filters):
         """
         Collects data from file
 
-        Args:
-            filter: name given via input field
-
         Returns: dynamic generated HTML displaying selected entries or error message
         """
-
-        if cherrypy.request.params.get("filter") == "":
-            raise cherrypy.HTTPRedirect('/')
-
-        self.error_message = None
+        print("AAAAAAAAA:", cherrypy.request.request_line, "BBBBBBBBBBBBB")
+        # if cherrypy.request.request_line.endswith("?"):
+        #     raise cherrypy.HTTPRedirect('/')
 
         # fetches data by filter or all if no filter is given
-        if filter:
-            entries = self.db.fetch(name=filter)
-        else:
+        error_message = None
+        try:
+            entries = self.db.fetch(**filters)
+
+        except KeyError:
+            error_message = "Invalid filter given.<br>Please check \"Input Examples\""
             entries = self.db.fetch()
 
         # creates HTML with selected entries
         if entries:
-            rendered_html = self.render_template(entries[0].keys(), entries)
+            rendered_html = self.render_template(entries[0].keys(), entries, error=error_message)
         else:
-
             # if no entries are found return error message
             error_message = "No entries found."
             rendered_html = self.render_template([], [], error=error_message)
@@ -86,7 +81,6 @@ class TableApp:
         Returns: dynamic generated HTML of all entries
         """
 
-        self.error_message = None
         if data:
             try:
                 # convert input to JSON
@@ -95,71 +89,65 @@ class TableApp:
 
             # if no valid JSON string was given, return error
             except json.JSONDecodeError as e:
-                self.error_message = "No valid JSON-data was given:<br>" + str(e)
-                rendered_html = self.render_template([], [], error=self.error_message)
+                error_message = "No valid JSON-data was given:<br>" + str(e)
+                rendered_html = self.render_template([], [], error=error_message)
                 return rendered_html
         else:
-            self.error_message = "No input detected.<br>Please enter valid JSON."
-            rendered_html = self.render_template([], [], error=self.error_message)
+            error_message = "No input detected.<br>Please enter valid JSON."
+            rendered_html = self.render_template([], [], error=error_message)
             return rendered_html
 
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def update_data(self, data=None):
+    def update_data(self, new_data, **filters):
         """
         Updates values in database entries based on their key.
 
         Args:
-            data: e.g. {"name": "schmidt", "street": "dorfstr"}. JSON formated entry with keys "name" & "street"
-                        where street is the new value
+            new_data: e.g. new_data={"key_for_value_to cange": "new_value"}, **{"key_to_search_by": "value_to_search_by"}
 
         Returns: dynamic generated HTML displaying all data
         """
 
-        self.error_message = None
-        if data:
+        if new_data:
             try:
-                data_dict = json.loads(data)
+                data_dict = json.loads(new_data)
 
-                if 'name' not in data_dict:
-                    self.error_message = "'name' is missing."
-                    rendered_html = self.render_template([], [], error=self.error_message)
+                if 'name' not in data_dict or 'street' not in data_dict:
+                    error_message = "'key' is missing."
+                    rendered_html = self.render_template([], [], error=error_message)
                     return rendered_html
-                else:
+                elif "name" in data_dict:
                     name_to_update = data_dict['name']
                     self.db.update(data_dict, name=name_to_update)
+                elif "street" in data_dict:
+                    street_to_update = data_dict['street']
+                    self.db.update(data_dict, street=street_to_update)
             except json.JSONDecodeError as e:
-                self.error_message = "No valid JSON-data was given:<br>" + str(e)
-                rendered_html = self.render_template([], [], error=self.error_message)
+                error_message = "No valid JSON-data was given:<br>" + str(e)
+                rendered_html = self.render_template([], [], error=error_message)
                 return rendered_html
         else:
-            self.error_message = "No input detected.<br>Please enter valid JSON."
-            rendered_html = self.render_template([], [], error=self.error_message)
+            error_message = "No input detected.<br>Please check \"Input Examples\""
+            rendered_html = self.render_template([], [], error=error_message)
             return rendered_html
 
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def delete_data(self, filter=None):
+    def delete_data(self, **filters):
         """
         Deletes entries based on given filter or all entries.
 
-        Args:
-            filter: "Name" for to be deleted entries
-
         Returns: Returns to starting page
         """
+        try:
+            self.db.delete(**filters)
+        except KeyError:
+            error_message = "Invalid filter given.<br>Please check \"Input Examples\""
+            return self.render_template([], [], filters=filters, error=error_message)
 
-        self.error_message = None
-        if filter:
-            self.db.delete(name=filter)
-        else:
-            # if no filter is given all data will be deleted
-            try:
-                self.db.delete()
-            except Exception as e:
-                self.error_message = "An error occured while deleting all data:<br>" + str(e)
         raise cherrypy.HTTPRedirect('/')
 
     def _copy_file(self, source_file, target_file):

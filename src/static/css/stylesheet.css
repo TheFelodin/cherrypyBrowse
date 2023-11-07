@@ -5,6 +5,9 @@ body {
     color: red;
     font-size: 30px;
 }
+.error_field{
+    background-color: red;
+}
 h1 {
     background-color: blue;
     color: white;

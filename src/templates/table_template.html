@@ -14,8 +14,7 @@
 {% if error %}
     <div id="error_message">{{ error|safe }}</div>
     <button id="back" onclick="location.href='/'">Back</button>
-
-{% else %}
+{% endif %}
     <!-- ... Table and Data... -->
     <table class="data_table">
         <tr>
@@ -36,27 +35,27 @@
         <label for="inputField">Your input:</label>
     </div>
     <div>
-        <input type="text" id="inputField" name="inputField">
+        <input type="text" name="inputField" id="inputField" {% if error %} class="error_field" value={{ filters }} {% endif %}>
     </div>
     <br>
-        <button id="fetch" onclick="location.href='/?filter=' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
+        <button id="fetch" onclick="location.href='/?' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
         <button id="insert" onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
         <button id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
-        <button id="delete" onclick="location.href='/delete_data?filter=' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
+        <button id="delete" onclick="location.href='/delete_data?' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
     <br>
     <hr>
     <br>
     <span style="font-size: x-small; ">
     <table class="example_table">
         <tr><th colspan="2" class="header2">Input examples:</th></tr>
+        <tr><td>Fetch:</td> <td>street=landstr <b>or</b> name=otto | If empty all data will be displayed.</td></tr>
         <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "dorfstr"}</td></tr>
-        <tr><td>Update:</td> <td>{"name": "maier", "street": "donaustr"}</td></tr>
-        <tr><td>Delete:</td> <td>otto</td></tr>
+        <tr><td>Update:</td> <td>new_data={"street": "Donaustr"}, **{"name": "maier"}</td></tr>
+        <tr><td>Delete:</td> <td>name=otto <b>or</b> street=donaustr</td></tr>
     </table>
     </span>
     <br>
     <br>
-{% endif %}
 <!-- ... Reset button ... -->
         <button id="reset-button" onclick="reset_data()">Reset</button>
 </body>

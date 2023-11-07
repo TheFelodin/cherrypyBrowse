@@ -203,12 +203,29 @@ def test_wrong_update_data():
     assert "'name' is missing." in soup.find("div", {"id": "error_message"}).get_text()
 
 
-def test_delete_data_with_filter():
+def test_delete_data_with_name_filter():
     """
     Tests deleting entries based on filter.
     """
 
-    url = f'{base_url}/delete_data?filter={NAME1}'
+    url = f'{base_url}/delete_data?name={NAME1}'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    data_table = soup.find("table", class_="data_table")
+    tr = data_table.find('tr', id='1')
+
+    # check csv_text string against HTML table content
+    assert NAME2 in tr.find('td', id='name1').get_text()
+    assert STREET2 in tr.find('td', id='street1').get_text()
+
+
+def test_delete_data_with_street_filter():
+    """
+    Tests deleting entries based on filter.
+    """
+
+    url = f'{base_url}/delete_data?street={STREET1}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -225,10 +242,22 @@ def test_delete_data_without_filter():
     Tests deleting all data if no filter is given.
     """
 
-    url = f'{base_url}/delete_data?filter='
+    url = f'{base_url}/delete_data?'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
     assert "No entries found." in soup.find("div", {"id": "error_message"}).get_text()
+
+
+def test_delete_data_with_invalid_filter():
+    """
+    Test deleting data with invalid filter.
+    """
+
+    url = f'{base_url}/delete_data?nam={NAME1}'
+    result = requests.get(url)
+    assert result.status_code == 500
+    assert "KeyError" in result.text
+
 
 
 def test_copy_file(cherrypy_server):

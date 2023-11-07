@@ -1,6 +1,6 @@
-dkcsvdb
+--index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple dkcsvdb
 cherrypy
 requests
 pytest
-bs4
+BeautifulSoup4
 jinja2
