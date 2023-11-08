@@ -100,7 +100,7 @@ class TableApp:
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def update_data(self, new_data, **filters):
+    def update_data(self, new_data):
         """
         Updates values in database entries based on their key.
 
@@ -113,7 +113,7 @@ class TableApp:
         if new_data:
             try:
                 data_dict = json.loads(new_data)
-
+                new_data_formated = f'new_data={new_data[0]}, \*\*'
                 if 'name' not in data_dict or 'street' not in data_dict:
                     error_message = "'key' is missing."
                     rendered_html = self.render_template([], [], error=error_message)
