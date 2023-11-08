@@ -31,27 +31,58 @@
             </tr>
         {% endfor %}
     </table>
-    <div>
-        <label for="inputField">Your input:</label>
+<!--- FETCH --->
+    <div class="fetch_input">
+        <label for="inputField_filter_fetch">Fetch:</label><br/>
+        <input type="text" name="filters" id="inputField_filter_fetch" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
+        <button id="fetch" onclick="location.href='/?' + document.getElementById('inputField_filter_fetch').value.toLowerCase()">Fetch</button><br>
+        <span class="help-block">street=landstr <b>or</b> name=otto | If empty all data will be displayed.</span>
     </div>
-    <div>
-        <input type="text" name="inputField" id="inputField" {% if error %} class="error_field" value={{ filters }} {% endif %}>
-    </div>
-    <br>
-        <button id="fetch" onclick="location.href='/?' + document.getElementById('inputField').value.toLowerCase()">Fetch</button>
-        <button id="insert" onclick="location.href='/insert_data?data=' + document.getElementById('inputField').value.toLowerCase()">Insert</button>
-        <button id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField').value.toLowerCase()">Update</button>
-        <button id="delete" onclick="location.href='/delete_data?' + document.getElementById('inputField').value.toLowerCase()">Delete</button>
-    <br>
+
     <hr>
-    <br>
+<!--- INSERT --->
+    <form method="post" action="/insert_data">
+        <div class="insert_input">
+            <label for="inputField_filter_insert">Insert:</label><br/>
+            <input type="text" name="data" id="inputField_filter_insert" placeholder='{"key1": "value1", "key2": "value2"}' size="30" {% if error %} class="error_field" {% endif %}>
+            <button type="submit" value="new_data" id="insert">Insert</button><br/>
+            <span class="help-block">{"name":"schmidt", "street":"dorfstr"}</span>
+        </div>
+    </form>
+
+    <hr>
+<!--- UPDATE --->
+    <form method="post" action="/update_data">
+        <div class="update_input">
+            <label for="inputField_filter_update">Update:</label><br/>
+            <input type="text" name="data_filter" id="inputField_filter_update" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
+            <input type="text" name="data_data" id="inputField-data" placeholder="data_key=data_value" {% if error %} class="error_field" {% endif %}>
+            <button type="submit" id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField_filter').value.toLowerCase()">Update</button>
+        </div>
+    </form>
+
+    <hr>
+<!--- DELETE --->
+    <div class="delete_input">
+        <label for="inputField_filter_delete">Delete:</label><br/>
+        <input type="text" name="" id="inputField_filter_delete" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
+        <button id="delete" onclick="location.href='/delete_data?' + document.getElementById('inputField_filter_delete').value.toLowerCase()">Delete</button><br/>
+        <span class="help-block">street=landstr <b>or</b> name=otto | If empty all data will be deleted.</span>
+    </div>
+
+<br/>
+
+    <hr>
+
+<br/>
+
     <span style="font-size: x-small; ">
     <table class="example_table">
         <tr><th colspan="2" class="header2">Input examples:</th></tr>
         <tr><td>Fetch:</td> <td>street=landstr <b>or</b> name=otto | If empty all data will be displayed.</td></tr>
         <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "dorfstr"}</td></tr>
         <tr><td>Update:</td> <td>{"street": "Donaustr"}, **{"name": "maier"}</td></tr>
-        <tr><td>Delete:</td> <td>name=otto <b>or</b> street=donaustr</td></tr>
+        <tr><td>Delete:</td> <td>name=otto <b>or</b> street=donaustr | If empty all data will be deleted.</td></tr>
     </table>
     </span>
     <br>

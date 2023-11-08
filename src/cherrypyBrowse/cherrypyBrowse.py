@@ -47,9 +47,6 @@ class TableApp:
 
         Returns: dynamic generated HTML displaying selected entries or error message
         """
-        print("AAAAAAAAA:", cherrypy.request.request_line, "BBBBBBBBBBBBB")
-        # if cherrypy.request.request_line.endswith("?"):
-        #     raise cherrypy.HTTPRedirect('/')
 
         # fetches data by filter or all if no filter is given
         error_message = None
@@ -100,7 +97,7 @@ class TableApp:
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def update_data(self, new_data):
+    def update_data(self, new_data, filter):
         """
         Updates values in database entries based on their key.
 
@@ -112,6 +109,7 @@ class TableApp:
 
         if new_data:
             try:
+
                 data_dict = json.loads(new_data)
                 new_data_formated = f'new_data={new_data[0]}, \*\*'
                 if 'name' not in data_dict or 'street' not in data_dict:
