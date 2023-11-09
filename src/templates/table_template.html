@@ -34,7 +34,7 @@
 <!--- FETCH --->
     <div class="fetch_input">
         <label for="inputField_filter_fetch">Fetch:</label><br/>
-        <input type="text" name="filters" id="inputField_filter_fetch" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
+        <input type="text" name="filters" id="inputField_filter_fetch" {% if error %} class="error_field" {% endif %}>
         <button id="fetch" onclick="location.href='/?' + document.getElementById('inputField_filter_fetch').value.toLowerCase()">Fetch</button><br>
         <span class="help-block">street=landstr <b>or</b> name=otto | If empty all data will be displayed.</span>
     </div>
@@ -44,7 +44,7 @@
     <form method="post" action="/insert_data">
         <div class="insert_input">
             <label for="inputField_filter_insert">Insert:</label><br/>
-            <input type="text" name="data" id="inputField_filter_insert" placeholder='{"key1": "value1", "key2": "value2"}' size="30" {% if error %} class="error_field" {% endif %}>
+            <input type="text" name="data" id="inputField_filter_insert" size="30" {% if error %} class="error_field" {% endif %}>
             <button type="submit" value="new_data" id="insert">Insert</button><br/>
             <span class="help-block">{"name":"schmidt", "street":"dorfstr"}</span>
         </div>
@@ -54,11 +54,14 @@
 <!--- UPDATE --->
     <form method="post" action="/update_data">
         <div class="update_input">
-            <label for="inputField_filter_update">Update:</label><br/>
-            <input type="text" name="filter_input" id="inputField_filter_update" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
-            <input type="text" name="value_input" id="inputField-data" placeholder="data_key=data_value" {% if error %} class="error_field" {% endif %}>
+            <p>Update:</p>
+            <label for="inputField_filter_update">Filter:</label><br/>
+            <input type="text" name="filter_input" id="inputField_filter_update" {% if error %} class="error_field" {% endif %}><br>
+            <span class="help-block">name=otto </span><br>
+            <label for="inputField_filter_update">Value:</label><br/>
+            <input type="text" name="value_input" id="inputField-data" {% if error %} class="error_field" {% endif %}>
             <button type="submit" value="new_data" id="update">Update</button><br/>
-            <span class="help-block">e.g. Filter: name=otto Value: street=donaustr</span>
+            <span class="help-block">{"name":"schmidt", "street":"dorfstr"}</span>
         </div>
     </form>
 
@@ -66,7 +69,7 @@
 <!--- DELETE --->
     <div class="delete_input">
         <label for="inputField_filter_delete">Delete:</label><br/>
-        <input type="text" name="" id="inputField_filter_delete" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
+        <input type="text" name="" id="inputField_filter_delete" {% if error %} class="error_field" {% endif %}>
         <button id="delete" onclick="location.href='/delete_data?' + document.getElementById('inputField_filter_delete').value.toLowerCase()">Delete</button><br/>
         <span class="help-block">street=landstr <b>or</b> name=otto | If empty all data will be deleted.</span>
     </div>
@@ -82,7 +85,7 @@
         <tr><th colspan="2" class="header2">Input examples:</th></tr>
         <tr><td>Fetch:</td> <td>street=landstr <b>or</b> name=otto | If empty all data will be displayed.</td></tr>
         <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "dorfstr"}</td></tr>
-        <tr><td>Update:</td> <td>street=donaustr & name=maier</td></tr>
+        <tr><td>Update:</td> <td>Filter: key=value | Value: {"key":"value"}</td></tr>
         <tr><td>Delete:</td> <td>name=otto <b>or</b> street=donaustr | If empty all data will be deleted.</td></tr>
     </table>
     </span>

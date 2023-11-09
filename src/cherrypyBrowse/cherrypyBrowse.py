@@ -53,19 +53,18 @@ class TableApp:
         try:
             entries = self.db.fetch(**filters)
 
-        except KeyError:
+        except dkcsvdb.dkcsvdb.InvalidKey:
             error_message = "Invalid filter given.<br>Please check \"Input Examples\""
             entries = self.db.fetch()
 
         # creates HTML with selected entries
         if entries:
-            rendered_html = self.render_template(entries[0].keys(), entries, error=error_message)
+            return self.render_template(entries[0].keys(), entries, error=error_message)
         else:
             # if no entries are found return error message
             error_message = "No entries found."
-            rendered_html = self.render_template([], [], error=error_message)
+            return self.render_template([], [], error=error_message)
 
-        return rendered_html
 
     @cherrypy.expose
     def insert_data(self, data=None):
@@ -82,59 +81,57 @@ class TableApp:
             try:
                 # convert input to JSON
                 data_dict = json.loads(data)
-                self.db.insert(data_dict)
-
             # if no valid JSON string was given, return error
-            except json.JSONDecodeError as e:
-                error_message = "No valid JSON-data was given:<br>" + str(e)
-                rendered_html = self.render_template([], [], error=error_message)
-                return rendered_html
+            except json.JSONDecodeError as exc:
+                error_message = "No valid JSON-data was given:<br>" + str(exc)
+                return self.render_template([], [], error=error_message)
+            try:
+                self.db.insert(data_dict)
+            except dkcsvdb.dkcsvdb.InvalidKey as exc:
+                error_message = "No valid data was given:<br>" + str(exc)
+                return self.render_template([], [], error=error_message)
         else:
             error_message = "No input detected.<br>Please enter valid JSON."
-            rendered_html = self.render_template([], [], error=error_message)
-            return rendered_html
+            return self.render_template([], [], error=error_message)
 
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def update_data(self, filter_input, value_input):
+    def update_data(self, value_input, filter_input):
         """
         Updates values in database entries based on their key.
 
         Args:
-            value_input:
-            filter_input:
+            value_input: key and value to be changed
+            filter_input: keys and values to check what to be changed. If none is given all data will be changed.
 
         Returns: dynamic generated HTML displaying all data
         """
-        if filter_input and value_input:
 
-            # Split inputs
-            data_filter_key, data_filter_value = filter_input.split('=')
-            data_value_key, data_value_value = value_input.split('=')
-
-            # Create dictionarys
-            filter_dic = {data_filter_key: data_filter_value}
-            value_dic = {data_value_key: data_value_value}
-
-            try:
-                self.db.update(new_data=value_dic, **filter_dic)
-            except Exception as e:
-                error_message = "No valid data was given:<br>" + str(e)
-                rendered_html = self.render_template([], [], error=error_message)
-                return rendered_html
-        elif filter_input and not value_input:
+        if not value_input:
             error_message = "No value input detected.<br>Please check \"Input Examples\""
-            rendered_html = self.render_template([], [], error=error_message)
-            return rendered_html
-        elif value_input and not filter_input:
-            error_message = "No filter input detected.<br>Please check \"Input Examples\""
-            rendered_html = self.render_template([], [], error=error_message)
-            return rendered_html
-        else:
-            error_message = "No input detected.<br>Please check \"Input Examples\""
-            rendered_html = self.render_template([], [], error=error_message)
-            return rendered_html
+            return self.render_template([], [], error=error_message)
+
+        try:
+            # convert value_input to JSON
+            data_dict = json.loads(value_input)
+            # if no valid JSON string was given, return error
+        except json.JSONDecodeError as exc:
+            error_message = "No valid JSON-data was given:<br>" + str(exc)
+            return self.render_template([], [], error=error_message)
+
+        filters = {}
+        if filter_input:
+            filter_list = filter_input.split('&')
+            for search_filter in filter_list:
+                filter_list_keys, filter_list_values = search_filter.split("=")
+                filters[filter_list_keys] = filter_list_values
+
+        try:
+            self.db.update(new_data=data_dict, **filters)
+        except dkcsvdb.dkcsvdb.InvalidKey as exc:
+            error_message = "No valid data was given:<br>" + str(exc)
+            return self.render_template([], [], error=error_message)
 
         raise cherrypy.HTTPRedirect('/')
 
@@ -147,9 +144,9 @@ class TableApp:
         """
         try:
             self.db.delete(**filters)
-        except KeyError:
+        except dkcsvdb.dkcsvdb.InvalidKey:
             error_message = "Invalid filter given.<br>Please check \"Input Examples\""
-            return self.render_template([], [], filters=filters, error=error_message)
+            return self.render_template([], [], error=error_message)
 
         raise cherrypy.HTTPRedirect('/')
 
