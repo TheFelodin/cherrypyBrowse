@@ -97,35 +97,40 @@ class TableApp:
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def update_data(self, new_data, filter):
+    def update_data(self, filter_input, value_input):
         """
         Updates values in database entries based on their key.
 
         Args:
-            new_data: e.g. new_data={"key_for_value_to cange": "new_value"}, **{"key_to_search_by": "value_to_search_by"}
+            value_input:
+            filter_input:
 
         Returns: dynamic generated HTML displaying all data
         """
+        if filter_input and value_input:
 
-        if new_data:
+            # Split inputs
+            data_filter_key, data_filter_value = filter_input.split('=')
+            data_value_key, data_value_value = value_input.split('=')
+
+            # Create dictionarys
+            filter_dic = {data_filter_key: data_filter_value}
+            value_dic = {data_value_key: data_value_value}
+
             try:
-
-                data_dict = json.loads(new_data)
-                new_data_formated = f'new_data={new_data[0]}, \*\*'
-                if 'name' not in data_dict or 'street' not in data_dict:
-                    error_message = "'key' is missing."
-                    rendered_html = self.render_template([], [], error=error_message)
-                    return rendered_html
-                elif "name" in data_dict:
-                    name_to_update = data_dict['name']
-                    self.db.update(data_dict, name=name_to_update)
-                elif "street" in data_dict:
-                    street_to_update = data_dict['street']
-                    self.db.update(data_dict, street=street_to_update)
-            except json.JSONDecodeError as e:
-                error_message = "No valid JSON-data was given:<br>" + str(e)
+                self.db.update(new_data=value_dic, **filter_dic)
+            except Exception as e:
+                error_message = "No valid data was given:<br>" + str(e)
                 rendered_html = self.render_template([], [], error=error_message)
                 return rendered_html
+        elif filter_input and not value_input:
+            error_message = "No value input detected.<br>Please check \"Input Examples\""
+            rendered_html = self.render_template([], [], error=error_message)
+            return rendered_html
+        elif value_input and not filter_input:
+            error_message = "No filter input detected.<br>Please check \"Input Examples\""
+            rendered_html = self.render_template([], [], error=error_message)
+            return rendered_html
         else:
             error_message = "No input detected.<br>Please check \"Input Examples\""
             rendered_html = self.render_template([], [], error=error_message)

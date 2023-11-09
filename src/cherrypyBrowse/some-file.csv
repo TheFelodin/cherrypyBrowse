@@ -1,8 +1,9 @@
 name,street
-otto,landstr
+otto,hauptstr
 weber,luisenstr
 meier,hauptstr
 weber,sonnenstr
 schulte,domstr
 maier,donaustr
-maier,elmstr
+maier,donaustr
+mueller,dorfstr

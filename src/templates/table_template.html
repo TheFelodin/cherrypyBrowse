@@ -55,9 +55,10 @@
     <form method="post" action="/update_data">
         <div class="update_input">
             <label for="inputField_filter_update">Update:</label><br/>
-            <input type="text" name="data_filter" id="inputField_filter_update" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
-            <input type="text" name="data_data" id="inputField-data" placeholder="data_key=data_value" {% if error %} class="error_field" {% endif %}>
-            <button type="submit" id="update" onclick="location.href='/update_data?data=' + document.getElementById('inputField_filter').value.toLowerCase()">Update</button>
+            <input type="text" name="filter_input" id="inputField_filter_update" placeholder="filter_key=filter_value" {% if error %} class="error_field" {% endif %}>
+            <input type="text" name="value_input" id="inputField-data" placeholder="data_key=data_value" {% if error %} class="error_field" {% endif %}>
+            <button type="submit" value="new_data" id="update">Update</button><br/>
+            <span class="help-block">e.g. Filter: name=otto Value: street=donaustr</span>
         </div>
     </form>
 
@@ -81,7 +82,7 @@
         <tr><th colspan="2" class="header2">Input examples:</th></tr>
         <tr><td>Fetch:</td> <td>street=landstr <b>or</b> name=otto | If empty all data will be displayed.</td></tr>
         <tr><td>Insert:</td> <td>{"name": "schmidt", "street": "dorfstr"}</td></tr>
-        <tr><td>Update:</td> <td>{"street": "Donaustr"}, **{"name": "maier"}</td></tr>
+        <tr><td>Update:</td> <td>street=donaustr & name=maier</td></tr>
         <tr><td>Delete:</td> <td>name=otto <b>or</b> street=donaustr | If empty all data will be deleted.</td></tr>
     </table>
     </span>
