@@ -124,8 +124,8 @@ class TableApp:
         if filter_input:
             filter_list = filter_input.split('&')
             for search_filter in filter_list:
-                filter_list_keys, filter_list_values = search_filter.split("=")
-                filters[filter_list_keys] = filter_list_values
+                filter_list_key, filter_list_value = search_filter.split("=")
+                filters[filter_list_key] = filter_list_value
 
         try:
             self.db.update(new_data=data_dict, **filters)
